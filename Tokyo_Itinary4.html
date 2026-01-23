@@ -1,0 +1,1539 @@
+<script>
+const tripDate = new Date('2026-01-29T19:55:00+08:00');
+setInterval(() => {
+  const now = new Date();
+  const diff = tripDate - now;
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  document.getElementById('countdown').innerHTML = `⏰ 出發倒數：<strong>${days}天 ${hours}小時</strong>`;
+}, 60000);
+</script>
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>東京 6 天行程手冊 2026/1/29–2/5</title>
+    <style>
+
+.weather-cards { display: none; flex-direction: column; gap: 10px; margin: 20px 0; }
+.weather-card { 
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb); padding: 15px; border-radius: 12px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; font-weight: 500; 
+}
+.weather-card.danger { background: linear-gradient(135deg, #ffebee, #ffcdd2); }
+.weather-card.rain { background: linear-gradient(135deg, #e0f2f1, #b2dfdb); }
+.weather-card.return { background: linear-gradient(135deg, #f3e5f5, #e1bee7); }
+.mobile-only { display: none; }
+@media (max-width: 768px) {
+    .desktop-only { display: none !important; }
+    .mobile-only, .weather-cards { display: block !important; }
+    .weather-card { font-size: 0.95em; padding: 12px; }
+}
+
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 50%, #6C5B7B 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        /* Navigation */
+        nav {
+            background: #2c3e50;
+            padding: 15px 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        nav a:hover {
+            background: #FF6B9D;
+        }
+        
+        /* Main Content */
+        main {
+            padding: 40px;
+        }
+        
+        section {
+            margin-bottom: 60px;
+            page-break-inside: avoid;
+        }
+        
+        section h2 {
+            color: #FF6B9D;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #FF6B9D;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        section h3 {
+            color: #6C5B7B;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #C06C84;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        table th {
+            background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        table tr:hover {
+            background: #f9f3f9;
+        }
+        
+        table tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        /* Info Boxes */
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #FF6B9D;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box.caution {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .info-box.success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        /* Timeline */
+        .timeline {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #FF6B9D;
+            border-radius: 4px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        
+        .timeline-item .time {
+            color: #FF6B9D;
+            font-weight: bold;
+            min-width: 80px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .timeline-item .content {
+            flex: 1;
+        }
+        
+        /* Restaurant Cards */
+        .restaurant-card {
+            background: white;
+            border: 2px solid #FF6B9D;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .restaurant-card h4 {
+            color: #FF6B9D;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .restaurant-card .detail {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+        
+        .restaurant-card .detail strong {
+            color: #6C5B7B;
+        }
+        
+        /* Shopping Grid */
+        .shopping-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .shop-card {
+            background: linear-gradient(135deg, #fff5f9 0%, #f0f4ff 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #FF6B9D;
+            transition: transform 0.3s;
+        }
+        
+        .shop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(255, 107, 157, 0.2);
+        }
+        
+        .shop-card strong {
+            color: #FF6B9D;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .shop-card small {
+            color: #666;
+        }
+        
+        /* Day Badges */
+        .day-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF6B9D 0%, #C06C84 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+        
+        /* Emoji Map Legend */
+        .emoji-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-item .emoji {
+            font-size: 1.5em;
+        }
+        
+        /* Maps Link */
+        .maps-link {
+            display: inline-block;
+            background: #FF6B9D;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 5px 5px 5px 0;
+        }
+        
+        .maps-link:hover {
+            background: #C06C84;
+            transform: translateY(-2px);
+        }
+        
+        /* Highlight */
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .highlight.reserved {
+            background: #d4edda;
+        }
+        
+        /* Checklist */
+        .checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #FF6B9D;
+        }
+        
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+            }
+            
+            nav {
+                display: none;
+            }
+            
+            section {
+                page-break-inside: avoid;
+            }
+            
+            a {
+                color: #FF6B9D;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            
+            section h2 {
+                font-size: 1.5em;
+            }
+            
+            .shopping-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            nav a {
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🗾 東京 6 天行程冊</h1>
+            <p>2026 年 1 月 29 日 – 2 月 5 日 | 完整版</p>
+        </header>
+
+
+        
+        <!-- Navigation -->
+        <nav>
+            <a href="#overview">行程總覽</a>
+            <a href="#day1">Day 1</a>
+            <a href="#day2">Day 2</a>
+            <a href="#day3">Day 3</a>
+            <a href="#day4">Day 4</a>
+            <a href="#day5">Day 5</a>
+            <a href="#day6">Day 6</a>
+            <a href="#day7">Day 7</a>
+            <a href="#checklist">預約清單</a>
+        </nav>
+
+    <head>
+<section id="weather-countdown" style="background: linear-gradient(135deg, #87CEEB 0%, #98D8C8 100%); padding: 30px; margin: 20px 40px; border-radius: 15px; text-align: center;">
+    <h2 style="color: white; margin-bottom: 20px;">🌤️ 天氣預報 & ⏰ 倒數計時</h2>
+    
+    <!-- 動態倒數 -->
+    <div id="countdown" style="font-size: 2.5em; color: #FF6B9D; font-weight: bold; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+        載入中...
+    </div>
+
+    
+<!-- 完整手機自適應天氣卡片（替換原有 <table>） -->
+<div class="weather-container">
+    <!-- 桌面版表格（保持原樣） -->
+    <table class="desktop-only">
+        <thead><tr><th>日期</th><th>氣溫</th><th>降雨</th><th>天氣</th><th>穿搭</th><th>備註</th></tr></thead>
+        <tbody>
+            <tr><td><strong>1/29(四)</strong></td><td>9°C/3°C ☀️</td><td>17%</td><td>晨間多雲</td><td>羽絨+圍巾</td><td>出發日</td></tr>
+            <tr style="background:#ffe6e6"><td><strong>1/30(五)草津</strong></td><td>4°C/-2°C ❄️</td><td>22%</td><td>多晴</td><td><strong>厚羽絨+手套</strong></td><td>高山-3°C</td></tr>
+            <tr><td><strong>1/31(六)</strong></td><td>8°C/2°C ☁️</td><td>36%</td><td>晨雲</td><td>羊毛衫+風衣</td><td>-</td></tr>
+            <tr><td><strong>2/1(日)</strong></td><td>9°C/3°C 🌦️</td><td>76%</td><td>細雨</td><td>雨衣+中厚外套</td><td>備傘</td></tr>
+            <tr><td><strong>2/2(一)</strong></td><td>10°C/3°C ☀️</td><td>20%</td><td>多晴</td><td>羽絨+圍巾</td><td>-</td></tr>
+            <tr><td><strong>2/3(二)</strong></td><td>9°C/3°C ☁️</td><td>30%</td><td>多雲</td><td>中厚外套</td><td>-</td></tr>
+            <tr style="background:#e6f3ff"><td><strong>2/4(三)</strong></td><td>9°C/3°C ☀️</td><td>25%</td><td>晴間多雲</td><td>羽絨+圍巾</td><td>回程日</td></tr>
+          
+        </tbody>
+    </table>
+    
+    <!-- 手機卡片版（8天完整） -->
+    <div class="weather-cards mobile-only">
+        <div class="weather-card"><strong>1/29 出發☀️</strong><br>9°C/3°C | 17%雨 | 羽絨+圍巾</div>
+        <div class="weather-card danger"><strong>1/30 草津❄️</strong><br>4°C/-2°C | 22%雨 | <span style="color:#d32f2f">厚羽絨+手套</span></div>
+        <div class="weather-card"><strong>1/31 東京☁️</strong><br>8°C/2°C | 36%雨 | 羊毛衫+風衣</div>
+        <div class="weather-card rain"><strong>2/1 東京🌦️</strong><br>9°C/3°C | <strong>76%雨</strong> | 雨衣必備</div>
+        <div class="weather-card"><strong>2/2 東京☀️</strong><br>10°C/3°C | 20%雨 | 羽絨舒適</div>
+        <div class="weather-card"><strong>2/3 東京☁️</strong><br>9°C/3°C | 30%雨 | 中厚外套</div>
+        <div class="weather-card return"><strong>2/4 回程☀️</strong><br>9°C/3°C | 25%雨 | 羽絨+圍巾</div>
+        
+    </div>
+</div>
+</section>
+
+
+
+        
+        <!-- Main Content -->
+        <main>
+            <!-- Overview Section -->
+            <section id="overview" class="section">
+                <h2>📋 行程總覽</h2>
+                
+                <div class="emoji-legend">
+                    <div class="legend-item">
+                        <span class="emoji">🏨</span>
+                        <span>住宿</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="emoji">🍴</span>
+                        <span>餐廳</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="emoji">🛍️</span>
+                        <span>購物</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="emoji">✈️</span>
+                        <span>交通</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="emoji">📸</span>
+                        <span>景點</span>
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>主題</th>
+                            <th>關鍵地點</th>
+                            <th>預約狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1/29（四）</strong></td>
+                            <td>香港 → 羽田 → 溫泉旅館首晚</td>
+                            <td>Villa Fontaine Haneda</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1/30（五）</strong></td>
+                            <td>自駕草津溫泉體驗</td>
+                            <td>草津溫泉 望雲</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1/31（六）</strong></td>
+                            <td>輕井澤 Outlet → 銀座 check-in</td>
+                            <td>Karuizawa / 東京站</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/1（日）</strong></td>
+                            <td>澀谷球鞋 → 表參道 → BeBu-Ya 燒肉</td>
+                            <td>米芝蓮燒肉 ⭐</td>
+                            <td><span class="highlight reserved">已預約</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/2（一）</strong></td>
+                            <td>鐵板燒 → 豪德寺 → 下北澤古著街 → 晴空塔夜景</td>
+                            <td>Kaika Ginza 11:30 / 晴空塔</td>
+                            <td><span class="highlight reserved">已預約</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/3（二）</strong></td>
+                            <td>中野 → Nagatacho Sushi Kanesaka</td>
+                            <td>米芝蓮壽司 ⭐</td>
+                            <td><span class="highlight reserved">已預約</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/4（三）</strong></td>
+                            <td>新宿 → Sun-mi Kagawa 壽喜燒</td>
+                            <td>壽喜燒雙選 ⭐</td>
+                            <td><span class="highlight reserved">已預約</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <!-- Day 1 -->
+            <section id="day1">
+                <h2>🛫 DAY 1 – 1/29（四）香港 → 羽田 → Villa Fontaine</h2>
+                
+<!-- 航班行李（手機卡片版） -->
+<section id="flight-info" style="padding: 20px; margin: 20px 0;">
+    <h3 style="text-align: left; margin-bottom: 25px;">✈️ 航班 + 行李規格</h3>
+    
+    <!-- 桌面表格 -->
+    <div class="desktop-only">
+        <table style="margin-bottom: 20px;">
+            <tr><th>航班</th><th>時間</th><th>托運</th><th>隨身</th></tr>
+            <tr style="background:#e8f5e8"><td><strong>🛫 UO628</strong></td><td>HKG 19:55→HND 00:45</td><td><span style="color:#28a745">20kg</span></td><td>僅隨身包</td></tr>
+            <tr style="background:#e8f5e8"><td><strong>🛬 UO623</strong></td><td>HND 23:55→HKG 04:15</td><td><span style="color:#28a745">32kg</span></td><td>可帶隨身包 + 手提共7kg</td></tr>
+        </table>
+    </div>
+    
+    <!-- 手機卡片 -->
+    <div class="flight-cards mobile-only" style="display: none; gap: 15px;">
+        <div style="background: linear-gradient(135deg, #e8f5e8, #c8e6c9); padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 6px 20px rgba(40,167,69,0.2);">
+            <h4 style="color: #FF6B9D; margin-bottom: 12px;">🛫 去程 UO628 (1/29)</h4>
+            <p><strong>HKG 19:55 → HND 00:45(+1)</strong><br>飛行 4h50m</p>
+            <div style="margin-top: 12px; font-size: 1.1em;">
+                <span style="color: #28a745; font-weight: bold;">托運 20kg</span><br>
+                <span style="color: #666;">僅隨身包</span>
+            </div>
+        </div>
+        <div style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 6px 20px rgba(156,39,176,0.2);">
+            <h4 style="color: #6C5B7B; margin-bottom: 12px;">🛬 回程 UO623 (2/4)</h4>
+            <p><strong>HND 23:55 → HKG 04:15(+1)</strong><br>飛行 4h20m</p>
+            <div style="margin-top: 12px; font-size: 1.1em;">
+                <span style="color: #28a745; font-weight: bold;">托運 32kg</span><br>
+                <span style="color: #666;">可帶隨身包 + 手提共7kg</span>
+            </div>
+        </div>
+    </div>
+</section>
+                
+                <h3>✈️ 航班資訊</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="time">19:55</span>
+                        <span class="content">🛫 香港（HKG）出發 UO628</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">00:45</span>
+                        <span class="content">🛬 東京羽田（HND T3）抵達</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">00:45–01:30</span>
+                        <span class="content">📋 入境、取行李、過海關</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">01:30</span>
+                        <span class="content">🏨 Check-in Villa Fontaine</span>
+                    </div>
+                </div>
+                
+
+
+                <h3>🏨 酒店詳情</h3>
+                <div class="restaurant-card">
+                    <h4>Hotel Villa Fontaine Premier Haneda Airport</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>東京都大田区羽田空港 2‑7‑1</span>
+                        <span><strong>特色：</strong>T3 直連、溫泉浴場免費</span>
+                        <span><strong>電話：</strong>+81-3-6423-8000</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Hotel+Villa+Fontaine+Premier+Haneda+Airport/@14.077,139.7703,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 備註：</strong>
+                    <ul>
+                        <li>凌晨抵達後可直接 check-in，房間洗澡休息</li>
+                        <li>若有體力可泡「泉天空の湯」溫泉浴場（免費）</li>
+                        <li>24 小時便利店和商場可用餐</li>
+                        <li>隔天 11:00 退房，充分休息時間</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Day 2 -->
+            <section id="day2">
+                <h2>🚗 DAY 2 – 1/30（五）羽田取車 → 草津溫泉 望雲</h2>
+                
+                <div class="day-badge">自駕溫泉之旅</div>
+                
+                <h3>⏰ 時間線</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="time">早上</span>
+                        <span class="content">🍽️ Villa Fontaine 自助早餐、收拾行李</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">11:00</span>
+                        <span class="content">🔑 退房</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">12:00</span>
+                        <span class="content">🚗 羽田機場租車取車</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">12:00–15:30</span>
+                        <span class="content">🛣️ 自駕路線：首都高速 → 関越道 → 澁川伊香保 IC → 草津（約 3 小時）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">15:30</span>
+                        <span class="content">🏨 Check-in 草津溫泉 望雲</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">下午～夜</span>
+                        <span class="content">🌡️ 湯畑散步、足湯、會席晚餐、溫泉</span>
+                    </div>
+                </div>
+                
+                <h3>🏨 旅館資訊</h3>
+                <div class="restaurant-card">
+                    <h4>草津溫泉 望雲（ぼううん）</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>群馬県吾妻郡草津町 433‑1</span>
+                        <span><strong>特色：</strong>湯畑 5 分步行、會席晚餐、樓下足湯區</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/%E8%8D%89%E6%B4%A5%E6%B8%A9%E6%B3%89%E6%9C%9B%E9%9B%B2/@36.626,138.583,15z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🚗 租車詳情（已預約 ⭐）</h3>
+                <div class="restaurant-card" style="border-color: #FF6B9D;">
+                    <h4>Avis Asia Holdings 羽田機場租車</h4>
+                    <div class="detail">
+                        <span><strong>公司：</strong>Avis（國際連鎖）</span>
+                        <span><strong>取車時間：</strong>Day 2（1/30）12:00</span>
+                        <span><strong>還車時間：</strong>Day 4（2/1）10:00 前</span>
+                        <span><strong>取車地點：</strong>東京羽田機場 Terminal 3 Rental Car 區域</span>
+                        <span><strong>還車地點：</strong>新橋內幸町店</span>
+                    </div>
+                </div>
+                
+                <h3>🚗 車型 & 費用</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>詳情</th>
+                            <th>價格</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>車型</strong></td>
+                            <td>Toyota Prius Hybrid 或同級（5 人乘）</td>
+                            <td>¥ ─</td>
+                        </tr>
+                        <tr>
+                            <td><strong>租賃期</strong></td>
+                            <td>2天（12:00–第三日 10:30）</td>
+                            <td>¥ ─</td>
+                        </tr>
+                        <tr>
+                            <td><strong>基本費用</strong></td>
+                            <td>日租費 1,499.0 HKD</td>
+                            <td>HK$1,499.0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>租車費 & 保險費</strong></td>
+                            <td>租車費＋保險費 & 保險升級費</td>
+                            <td>¥26,400</td>
+                        </tr>
+                        <tr>
+                            <td><strong>線上付款</strong></td>
+                            <td>取車時 HK$1,301.0</td>
+                            <td>HK$1,301.0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>小計</strong></td>
+                            <td>含全險 (Full to full) + 無限里程制</td>
+                            <td>HK$195.5</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="info-box success">
+                    <strong>✅ 租車優勢：</strong>
+                    <ul>
+                        <li>Prius Hybrid 油耗低（可減少加油次數）</li>
+                        <li>全險 + 無限里程制（無額外里程費）</li>
+                        <li>ETC 自動道路收費（無需手動支付高速費）</li>
+                        <li>羽田 T3 直達取車，流程快速</li>
+                    </ul>
+                </div>
+                
+                <h3>🚗 自駕提示 & 加油指南</h3>
+                <div class="info-box">
+                    <ul>
+                        <li><strong>駕駛規則：</strong>日本是左駕，靠左行駛，超車在右側；速度限制城市 40–60km/h，高速 100km/h</li>
+                        <li><strong>導航系統：</strong>Google Maps 設定「草津溫泉 望雲」或使用租車內置 GPS</li>
+                        <li><strong>高速通行：</strong>ETC 卡片（Avis 提供）自動扣費，無需停車；保留收據作記錄</li>
+                        <li><strong>加油站地點：</strong>澁川伊香保 IC 下高速後 500m 內有 ENEOS / 出光加油站</li>
+                        <li><strong>加油方法：</strong>日本加油站為自助，告知油種（通常 レギュラー Regular 無鉛汽油）並選擇金額（¥3,000–5,000）</li>
+                        <li><strong>停車：</strong>旅館 & Outlet 都提供免費停車；銀座還車無停車費</li>
+                        <li><strong>還車時間：</strong>Day 3 上午 10:00 前回到新橋內幸町店還車，檢查無損即可離開</li>
+                        <li><strong>駕駛時長：</strong>草津→輕井澤 1.5 小時；輕井澤→銀座 2 小時（中間可休息 15 分）</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box caution">
+                    <strong>⚠️ 重要注意：</strong>
+                    <ul>
+                        <li>日本駕駛靠<strong>左側</strong>，台灣香港是靠右；第一次需時間適應</li>
+                        <li>建議<strong>白天開車</strong>；若夜間疲勞駕駛，建議在服務區停留 15–20 分鐘</li>
+                        <li>國際駕照 + 護照 + 租車憑證必須隨身攜帶（警察檢查）</li>
+                        <li>雨天、積雪路段減速；冬季山區可能有冰雪</li>
+                        <li>日本停止線左轉需紅燈時等待（與香港不同），勿搶紅燈</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box caution">
+                    <strong>⚠️ 注意：</strong>日本是左駕，建議白天開車；中途在服務區休息 15 分鐘。
+                </div>
+            </section>
+            
+            <!-- Day 3 -->
+            <section id="day3">
+                <h2>🎴 DAY 3 – 1/31（六）草津 → 輕井澤 Outlet → 銀座 check-in</h2>
+                
+                <div class="day-badge">Outlet 購物 + 鰻魚晚餐</div>
+                
+                <h3>⏰ 時間線</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="time">07:30–09:30</span>
+                        <span class="content">🍽️ 早餐＋最後泡湯 → 退房</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">09:30–11:00</span>
+                        <span class="content">🚗 自駕：草津 → 輕井澤（1.5 小時）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">11:00–14:30</span>
+                        <span class="content">🛍️ Karuizawa Prince Shopping Plaza Outlet（購物+午餐）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">14:30–16:30</span>
+                        <span class="content">🚗 自駕：輕井澤 → 東京銀座（還車）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">16:30</span>
+                        <span class="content">🏨 Check-in Mitsui Garden Ginza-gochome</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">16:30–19:30</span>
+                        <span class="content">🛍️ 東京站附近商場散步：<br>• GRANSTA Tokyo（地下街）→ 買手信<br>• KITTE 丸之內（高樓層、咖啡輕食）<br>• 大丸東京店（化妝品、藥妝、精品）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">19:30–20:30</span>
+                        <span class="content">🛍️ GRANSTA Tokyo 買手信</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">20:30–22:00</span>
+                        <span class="content">🔴 <span class="highlight reserved">🍴 晚餐：うなぎ 四代目菊川 - 東京站黑塀橫丁（已預約 ⭐）</span></span>
+                    </div>
+                </div>
+                
+                <h3>🏢 銀座酒店</h3>
+                <div class="restaurant-card">
+                    <h4>Mitsui Garden Hotel Ginza-gochome</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>東京都中央区銀座 5‑13‑15</span>
+                        <span><strong>優勢：</strong>銀座 5 丁目樞紐、GINZA SIX 對面、地鐵 3 分步行</span>
+                        <span><strong>電話：</strong>+81-3-3574-7111</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Mitsui+Garden+Hotel+Ginza-gochome/@35.6710,139.7673,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🍴 晚餐預訂</h3>
+                <div class="restaurant-card">
+                    <h4>うなぎ 四代目菊川 東京駅黒塀横丁店</h4>
+                    <div class="detail">
+                        <span><strong>位置：</strong>東京駅 B1F グランスタ八重北 黑塀橫丁</span>
+                        <span><strong>特色：</strong>傳統江戶黑塀街、鰻魚飯香、白蒸 / 紅燒選項</span>
+                        <span><strong>營業：</strong>午 11:00–15:00 / 晚 17:00–23:00（週日營業）</span>
+                        <span><strong>預約時間：</strong>20:30</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Unagi+Shirokabe+Yokocho/@35.6808,139.7690,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+            </section>
+            
+            <!-- Day 4 -->
+            <section id="day4">
+                <h2>🎉 DAY 4 – 2/1（日）澀谷球鞋 → Menchirashi → 表參道 → BeBu-Ya 燒肉</h2>
+                
+                <div class="day-badge">購物＋美食＋展望台</div>
+                
+                <h3>⏰ 時間線</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="time">09:00–09:30</span>
+                        <span class="content">🥪 Camelback 三明治 & 咖啡 | ☕ Fuglen Tokyo 北歐咖啡館</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">10:00–10:30</span>
+                        <span class="content">🎾 Windsor Racket Shop </span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">11:40–12:05</span>
+                        <span class="content">🌆 Shibuya Sky 展望台 </span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">12:15–12:45</span>
+                        <span class="content">👟 澀谷球鞋店巡禮：Kith Tokyo / Jordan World of Flight </span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">12:55–13:50</span>
+                        <span class="content">🍜 <span class="highlight">Menchirashi 麵散（新增 ⭐）</span> 手工 udon + 天婦羅</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">14:00–14:45</span>
+                        <span class="content">👟 New Balance Tokyo Harajuku </span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">15:00–15:55</span>
+                        <span class="content">🍜 AFURI Harajuku 柚子鹽拉麵 </span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">16:00–17:45</span>
+                        <span class="content">🛍️ 原宿／表參道／青山逛街（@cosme / Laforet / goro's）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">18:00–18:45</span>
+                        <span class="content">🌆 六本木（夜景）| 六本木站 (日比谷線1C出口) 走至けやき坂イルミネーション</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">20:30–22:00</span>
+                        <span class="content">🔴 <span class="highlight reserved">🍴 晚餐：BeBu-Ya 渋谷店 晚餐（已預約 ⭐）</span></span>
+                    </div>
+                </div>
+
+                <h3>🍜 AFURI Harajuku 柚子鹽拉麵</h3>
+                <div class="restaurant-card">
+                    <h4>AFURI 原宿</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>澀谷區千馱谷3丁目 6‑13‑7</span>
+                        <span><strong>推薦：</strong>柚子鹽拉麵 + 柚子醬油拉麵 + 炙燒叉燒飯</span>
+                        <span><strong>營業：</strong>11:00-05:00（現場排隊制）</span>
+                        <span><strong>排隊時間：</strong>14:00 到店約 15–20 分鐘</span>
+                    </div>
+                    <a href="https://maps.app.goo.gl/yWtfLN5fDyLvM9CV9" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🍴 Menchirashi 麵散（新增 ⭐）</h3>
+                <div class="restaurant-card">
+                    <h4>麵散（Menchirashi）</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>渋谷区神宮前 6‑13‑7</span>
+                        <span><strong>推薦：</strong>kake udon（湯麵）+ 天婦羅 + 飯糰</span>
+                        <span><strong>營業：</strong>11:30–23:00（現場排隊制）</span>
+                        <span><strong>排隊時間：</strong>14:00 到店約 15–20 分鐘</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Menchirashi+Harajuku/@35.6674,139.7012,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🔴 BeBu-Ya 渋谷店（已預約 ⭐）</h3>
+                <div class="restaurant-card">
+                    <h4>和牛焼肉食べ放題 BeBu-Ya 渋谷店</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>渋谷区宇田川町 31‑1 HULIC &amp; New SHIBUYA 5F</span>
+                        <span><strong>預約時間：</strong>20:30</span>
+                        <span><strong>推薦：</strong>A4 薩摩牛食べ放題コース（含厚切り上タン）</span>
+                        <span><strong>價位：</strong>¥6,500–8,000</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/BeBu-Ya+Shibuya/@35.6595,139.7006,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🛍️ 購物店舖</h3>
+                <div class="shopping-grid">
+                    <div class="shop-card">
+                        <strong>👟 Kith Tokyo</strong>
+                        <small>限定聯名、Nike / Adidas<br>MIYASHITA PARK</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>👟 Jordan World of Flight</strong>
+                        <small>喬丹系列、最新款<br>神南 1‑13‑12</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>💄 @cosme TOKYO</strong>
+                        <small>日本彩妝集合點<br>神宮前 6‑9</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>👗 Laforet Harajuku</strong>
+                        <small>街著 + indie brand<br>神宮前 1‑11‑21</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🎽 goro's Omotesando</strong>
+                        <small>革製品、皮帶、錢包<br>神宮前 6‑1</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>👖 Momotaro Jeans Aoyama</strong>
+                        <small>日本高級牛仔褲<br>青山 2‑25‑10</small>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Day 5 -->
+            <section id="day5">
+                <h2>🎯 DAY 5 – 2/2（一）Kaika Ginza 11:30 → 豪德寺 → 下北澤 → 上野夜景 → 晴空塔 → 銀座</h2>
+                
+                <div class="day-badge">鐵板燒 + 古著街 + 夜景 + 晴空塔</div>
+                
+                <h3>⏰ 時間線</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="time">09:00–11:10</span>
+                        <span class="content">☕ Glitch Coffee Ginza（精品咖啡）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">11:30–13:00</span>
+                        <span class="content">🔴 <span class="highlight reserved"> 午餐：Kaika Ginza 鐵板燒（已預約 ⭐）</span></span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">13:15–14:45</span>
+                        <span class="content">🐱 豪德寺（招財貓廟、小田急線沿線）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">15:00–17:20</span>
+                        <span class="content">👗 下北澤古著街：WEGO / 北澤八幡 / 古著集中區</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">17:40–18:20</span>
+                        <span class="content">🍰 egg baby café 下午茶（上野 5-10-9）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">18:25–19:00</span>
+                        <span class="content">💎 上野中古街阿美橫丁（Komehyo / Brand Off）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">19:05–19:50</span>
+                        <span class="content">🌸 上野公園不忍池夜櫻燈光景觀</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">20:00–20:30</span>
+                        <span class="content">🍜 <span class="highlight reserved">晚餐：鴨to葱拉麵（已預約 ⭐）</span></span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">20:50–22:00</span>
+                        <span class="content">🌆 <span class="highlight">晴空塔夜景展望台（Tembo Galleria 445–450m ⭐ 新增）</span></span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">22:00-22:10</span>
+                        <span class="content">🚇 晴空塔→銀座（半藏門線 10 分）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">22:30</span>
+                        <span class="content">🏨 回銀座酒店休息</span>
+                    </div>
+                </div>
+                
+                <h3>🍲 Kaika Ginza 鐵板燒（已預約 ⭐）</h3>
+                <div class="restaurant-card">
+                    <h4>鉄板焼かいか Teppanyaki Kaika Ginza</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>中央区銀座 6‑8‑7 交詢ビル 4F</span>
+                        <span><strong>菜單：</strong>和牛 + 海鮮（伊勢龍蝦/鮑魚）+ 前菜 + 蒜炒飯（9品）</span>
+                        <span><strong>營業：</strong>11:30–15:00（L.O.14:00）</span>
+                        <span><strong>價位：</strong>¥12,000–18,000</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Teppanyaki+Kaika+Ginza/@35.6729,139.7669,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🐱 豪德寺（Goutokuji Temple）</h3>
+                <div class="restaurant-card">
+                    <h4>豪德寺 招財貓廟</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>世田谷区豪德寺 2‑24‑7</span>
+                        <span><strong>特色：</strong>千隻招財貓、靜謐寺院、小田急線沿線</span>
+                        <span><strong>營業：</strong>08:00–17:00（全年無休）</span>
+                        <span><strong>門票：</strong>免費參拜</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Gotokuji+Temple/@35.6543,139.6387,15z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>👗 下北澤古著街</h3>
+                <div class="restaurant-card">
+                    <h4>下北澤 古著衣著集合區</h4>
+                    <div class="detail">
+                        <span><strong>位置：</strong>下北澤商店街 & 小北澤區域</span>
+                        <span><strong>推薦店舖：</strong>WEGO / GODDAY / 古著集中區</span>
+                        <span><strong>營業：</strong>12:00–20:00 前後（店舖各異）</span>
+                        <span><strong>特色：</strong>平價古著、二手衣物、獨立設計師品牌</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Shimokitazawa+Shopping+Street/@35.6625,139.6677,16z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+
+                <h3>🍜 鴨to葱拉麵 （已預約 ⭐）</h3>
+                <div class="restaurant-card">
+                    <h4>らーめん 鴨to葱 上野御徒町本店</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>東京都台東區上野6-4-15</span>
+                        <span><strong>推薦：</strong>鴨らーめん (鴨肉拉麵)/ 鴨汁つけそば (鴨汁沾麵) + 親子丼/ 生鮪魚碎肉丼 </span>
+                        <span><strong>營業：</strong>24小時營業（L.O.14:00）</span>
+                    <span><strong>預約時間：</strong>20:00</span>
+                        <span><strong>價位：</strong>¥1,000–1,999</span>
+                    </div>
+                    <a href="https://maps.app.goo.gl/RJXdtzUejUjqbGxr7?g_st=ipc" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🌆 晴空塔夜景展望台（新增 ⭐）</h3>
+                <div class="restaurant-card" style="border-color: #FF6B9D; background: #fff5f9;">
+                    <h4>東京スカイツリー 天望回廊 Tembo Galleria</h4>
+                    <div class="detail">
+                        <span><strong>高度：</strong>445–450m（世界最高展望台）</span>
+                        <span><strong>位置：</strong>押上駅直連</span>
+                        <span><strong>營業：</strong>09:00–23:00（最後入場 21:00）</span>
+                        <span><strong>票價：</strong>¥3,100（成人）/ 網購 e-ticket 可省 ¥500</span>
+                        <span><strong>推薦時間：</strong>19:30–20:00（燈光全開、夜景最美）</span>
+                        <span><strong>特色：</strong>360° 東京夜景、東京鐵塔燈光、晴空塔外觀合照</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Tokyo+Skytree+Tembo+Galleria/@35.7100,139.8107,15z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🛍️ Day 5 景點總覽</h3>
+                <div class="shopping-grid">
+                    <div class="shop-card">
+                        <strong>🐱 豪德寺</strong>
+                        <small>千隻招財貓、寺院靜謐<br>世田谷区豪德寺</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>👗 下北澤古著街</strong>
+                        <small>平價古著、獨立設計師<br>小田急線沿線</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>💎 Komehyo 上野</strong>
+                        <small>中古名表、Rolex<br>上野 6‑12‑8</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>👜 Brand Off</strong>
+                        <small>LV / Gucci / Prada<br>上野 7‑1‑1</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🌸 上野公園不忍池</strong>
+                        <small>冬夜櫻燈光倒影<br>台東区上野公園</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>☕ egg baby café</strong>
+                        <small>雞蛋料理 + 甜點<br>上野 5‑10‑9</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🍜 鴨to葱拉麵</strong>
+                        <small>鴨肉叉燒拉麵<br>上野6-4-15</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🌆 晴空塔 Tembo</strong>
+                        <small>450m 最高展望台 ⭐<br>押上駅直連</small>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 Day 5 時間安排建議：</strong>
+                    <ul>
+                        <li>✅ Kaika 鐵板燒食材現做，帶相機拍照！</li>
+                        <li>✅ 豪德寺：13:15–14:45（避開正午人潮）</li>
+                        <li>✅ 下北澤古著街：15:00–17:20（充足 2 小時 20 分逛街）</li>
+                        <li>✅ egg baby café：17:40–18:20（下午茶甜點）</li>
+                        <li>✅ 上野中古街：18:25–19:00（18:25 到達人潮最少）</li>
+                        <li>✅ 上野公園不忍池：19:05–19:30（冬夜櫻燈光倒影最美）</li>
+                        <li>✅ 鴨to葱拉麵：20:00-20:30（晚餐時間不用等）</li>
+                        <li>✅ 晴空塔 Tembo Galleria：20:50–22:00（19:30–20:00 燈光全開）</li>
+                        <li>✅ 交通：上野 → 押上（半藏門線約 6 分鐘）→ 22:30 前回銀座</li>
+                        <li>✅ <strong>總時間無虛：完全按時回到銀座酒店 22:30</strong></li>
+                    </ul>
+                </div>
+                
+                <div class="info-box success">
+                    <strong>🎫 晴空塔購票建議：</strong>
+                    <ul>
+                        <li>💳 官方網站提前買 e-ticket（省 ¥500）</li>
+                        <li>🎟️ 選「天望回廊」票（450m 最高）</li>
+                        <li>⏰ 預訂 19:45 入場時段（避開高峰）</li>
+                        <li>☕ 展望台內有咖啡廳，可坐著欣賞 360° 夜景</li>
+                        <li>📸 帶充電器 + 手機 + 相機（夜景拍照必備）</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Day 6 -->
+            <section id="day6">
+                <h2>🍣 DAY 6 – 2/3（二）中野 → Nagatacho Sushi Kanesaka 12:00 → 中目黑代官山 → 根室花まる</h2>
+                
+                <div class="day-badge">米芝蓮壽司 + 東京散步</div>
+                
+                <h3>⏰ 時間線</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="time">10:00–12:00</span>
+                        <span class="content">🎴 Nakano Broadway 完整 2 小時（手錶 / 卡牌 / 模型）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">12:30–14:00</span>
+                        <span class="content">🔴 <span class="highlight reserved">Nagatacho Sushi Kanesaka 午餐（米芝蓮 ⭐⭐）</span></span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">14:30–16:30</span>
+                        <span class="content">☕ 中目黒逛街（豆虎 / VISVIM / SML）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">16:45–18:30</span>
+                        <span class="content">🏙️ 代官山逛街（nanamica / Hedy / T-Site）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">19:30–22:00</span>
+                        <span class="content">🍣 根室花まる 銀座店 晚餐（現場取號 ⭐）</span>
+                    </div>
+                </div>
+                
+                <h3>🍣 Nagatacho Sushi Kanesaka（米芝蓮 ⭐⭐）</h3>
+                <div class="restaurant-card">
+                    <h4>永田町壽司かねさか Nagatacho Sushi Kanesaka</h4>
+                    <div class="detail">
+                        <span><strong>地址：</strong>千代田区永田町 2‑7‑9</span>
+                        <span><strong>形式：</strong>午市一輪制 Omakase（江戶前壽司）</span>
+                        <span><strong>米芝蓮：</strong>⭐⭐ 二星</span>
+                        <span><strong>價位：</strong>¥12,000–18,000</span>
+                        <span><strong>預留時間：</strong>90 分鐘（15 件 omakase）</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Nagatacho+Sushi+Kanesaka/@35.6752,139.7395,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🍣 根室花まる 銀座店（晚餐，現場取號）</h3>
+                <div class="restaurant-card">
+                    <h4>回転寿司 根室花まる 銀座店</h4>
+                    <div class="detail">
+                        <span><strong>位置：</strong>東急プラザ銀座 10F（銀座 3‑2‑1）</span>
+                        <span><strong>營業：</strong>11:00–23:00</span>
+                        <span><strong>特色：</strong>迴轉壽司 + 立吞 + 最新鮮</span>
+                        <span><strong>排隊提示：</strong>19:40 前到達有位置，現場排號（無網上預約）</span>
+                    </div>
+                    <a href="https://www.google.com/maps/place/Nemuro+Hanamaru+Ginza/@35.6728,139.7619,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                </div>
+                
+                <h3>🛍️ 中目黑 & 代官山購物</h3>
+                <div class="shopping-grid">
+                    <div class="shop-card">
+                        <strong>☕ 豆虎</strong>
+                        <small>職人咖啡豆、甜點<br>上目黒 3‑3‑7</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>👗 VISVIM</strong>
+                        <small>日本設計師高級服飾<br>中目黒 1‑22‑11</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>👕 nanamica</strong>
+                        <small>日本時尚品牌、簡約風<br>猿楽町 26‑13</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>📚 T-Site</strong>
+                        <small>書籍 / 咖啡 / 設計品複合<br>猿楽町 17‑5</small>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Day 7 -->
+            <section id="day7">
+                <h2>💰 DAY 7 – 2/4（三）新宿 Alpen+MINT → Sun-mi Kagawa 壽喜燒 → 銀座最後掃貨 → 羽田夜機</h2>
+                
+                <div class="day-badge">最後購物 + 壽喜燒 + 返港</div>
+                
+                <h3>⏰ 時間線</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="time">09:00–11:30</span>
+                        <span class="content">🏃 新宿：Alpen TOKYO + MINT Shinjuku（購物 / 卡店）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">12:00–13:30</span>
+                        <span class="content">🔴 <span class="highlight reserved">Sun-mi Kagawa 壽喜燒 午餐（已預約 ⭐）</span>（推薦）或人形町今半</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">13:30–17:00</span>
+                        <span class="content">🛍️ 銀座最後掃貨：LOFT / Itoya / 無印 / GINZA SIX / TEN&</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">17:00–20:30</span>
+                        <span class="content">🏨 回酒店收拾行李、輕食、洗澡</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">20:30–21:30</span>
+                        <span class="content">✈️ 銀座 → 羽田 T3（地鐵 + 京急或利木津巴士，40–50 分）</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">23:55</span>
+                        <span class="content">🛫 UO623 HND 出發</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">04:15</span>
+                        <span class="content">🛬 HKG 抵達（2/5 早上）</span>
+                    </div>
+                </div>
+                
+                <h3>🍲 壽喜燒雙選</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <div class="restaurant-card" style="border-color: #28a745; background: #f0fff4;">
+                        <h4 style="color: #28a745;">✅ 推薦 A：Sun-mi Nihonryori Kagawa</h4>
+                        <div class="detail">
+                            <span><strong>地址：</strong>銀座 6‑3‑9 Sun-mi 高松 4F</span>
+                            <span><strong>招牌：</strong>米澤牛 A5 サーロイン</span>
+                            <span><strong>評價：</strong>Tabelog 3.5 / Instagram 超夯</span>
+                            <span><strong>價位：</strong>¥10,000–15,000</span>
+                            <span><strong>特色：</strong>霜降牛、甜度高、油花多、適合重口味 ⭐⭐⭐</span>
+                        </div>
+                        <a href="https://www.google.com/maps/place/Sun-mi+Kagawa/@35.6710,139.7681,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                    </div>
+                    
+                    <div class="restaurant-card" style="border-color: #6c757d;">
+                        <h4 style="color: #6c757d;">備案 B：人形町今半銀座店</h4>
+                        <div class="detail">
+                            <span><strong>地址：</strong>銀座 6‑8‑7 交詢ビル 5F</span>
+                            <span><strong>招牌：</strong>傳統關東風壽喜燒</span>
+                            <span><strong>評價：</strong>Tabelog 3.6 / 120 年老舖</span>
+                            <span><strong>價位：</strong>¥12,000–18,000</span>
+                            <span><strong>特色：</strong>傳統手法、牛肉軟嫩、湯頭溫和 ⭐</span>
+                        </div>
+                        <a href="https://www.google.com/maps/place/Imasa+Ginza/@35.6729,139.7669,17z" class="maps-link" target="_blank">📍 Google Maps</a>
+                    </div>
+                </div>
+                
+                <div class="info-box caution">
+                    <strong>⏰ 決定時間：</strong>13:00 前決定選哪家；若兩間都在交詢ビル，臨時改變主意也很方便（Sun-mi 4F / 今半 5F）。
+                </div>
+                
+                <div class="info-box">
+                    <strong>🌙 銀座夜間放鬆選項（20:50–21:30）：</strong>
+                    <ul>
+                        <li>☕ <strong>虎屋 Cafe Ginza</strong>（和果子 + 茶，靜謐）</li>
+                        <li>🍹 <strong>Drink Bar 雨が降っても</strong>（和風小酒館，高級感）</li>
+                        <li>🍦 <strong>noix de beurre</strong>（起司撻，可外帶）</li>
+                        <li>樸素放鬆：<strong>GINZA SIX</strong> 7F 座位區，吹晚風看夜景</li>
+                    </ul>
+                </div>
+                
+                <h3>🛍️ 銀座最後掃貨清單</h3>
+                <div class="shopping-grid">
+                    <div class="shop-card">
+                        <strong>🏬 銀座 LOFT</strong>
+                        <small>彩妝集合、文具、小物<br>銀座 2‑5‑1</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>📝 銀座 Itoya</strong>
+                        <small>和紙、美術用品、文創<br>銀座 2‑7‑15</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>✏️ 無印良品</strong>
+                        <small>旅行組、基本款<br>銀座 3‑8‑15</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>💎 GINZA SIX</strong>
+                        <small>LV / Celine / 時尚精品<br>銀座 6‑10‑1</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🍪 noix de beurre</strong>
+                        <small>起司撻、甜點<br>松屋銀座 B2F</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🍫 TEN&</strong>
+                        <small>生巧克力、馬卡龍<br>日比谷 OKUROJI</small>
+                    </div>
+                </div>
+                
+                <h3>✈️ 羽田交通選項</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>交通方式</th>
+                            <th>路線</th>
+                            <th>時間</th>
+                            <th>價格</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>地鐵 + 京急</strong></td>
+                            <td>銀座線 → 日本橋 → 京急快速 → 羽田</td>
+                            <td>40–50 分</td>
+                            <td>¥1,050</td>
+                        </tr>
+                        <tr>
+                            <td><strong>利木津巴士</strong></td>
+                            <td>直達羽田 T3（預訂）</td>
+                            <td>50–60 分</td>
+                            <td>¥3,100</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <!-- Checklist -->
+            <section id="checklist">
+                <h2>📋 預約確認清單</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>餐廳名</th>
+                            <th>時間</th>
+                            <th>狀態</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>2/1</strong></td>
+                            <td>BeBu-Ya 渋谷店</td>
+                            <td>20:30</td>
+                            <td><span class="highlight reserved">✅ 已預約</span></td>
+                            <td>A4 薩摩牛食べ放題</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/2</strong></td>
+                            <td>Kaika Ginza 鐵板燒</td>
+                            <td>11:30</td>
+                            <td><span class="highlight reserved">✅ 已預約</span></td>
+                            <td>和牛 + 海鮮 9 品</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/3</strong></td>
+                            <td>Nagatacho Sushi Kanesaka</td>
+                            <td>12:30</td>
+                            <td><span class="highlight reserved">✅ 已預約</span></td>
+                            <td>米芝蓮 ⭐⭐ 壽司 Omakase</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/3</strong></td>
+                            <td>根室花まる 銀座店</td>
+                            <td>19:30–22:00</td>
+                            <td>⚠️ 現場取號</td>
+                            <td>19:40 前到達；迴轉壽司</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/4</strong></td>
+                            <td><strong>Sun-mi Kagawa</strong>（推薦）</td>
+                            <td>12:00–13:00</td>
+                            <td><span class="highlight reserved">✅ 已預約</span></td>
+                            <td>米澤牛壽喜燒 ⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2/4</strong></td>
+                            <td>人形町今半（備案）</td>
+                            <td>12:00–13:00</td>
+                            <td><span class="highlight reserved">✅ 已預約</span></td>
+                            <td>傳統壽喜燒 ⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>✅ 出發前檢查清單</h3>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1">
+                        <label for="check1">護照 + 機票截圖打印</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2">
+                        <label for="check2">信用卡 / 現金 ¥50,000–100,000</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3">
+                        <label for="check3">手機 + 充電器 × 2</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4">
+                        <label for="check4">相機 / 行動電源</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check5">
+                            <label for="check5">厚外套 / 羽絨服 × 1–2</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check6">
+                        <label for="check6">運動鞋 × 1–2 + 舒適雨鞋</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check7">
+                        <label for="check7">基礎護膚 / 口罩 × 10</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check8">
+                        <label for="check8">變壓器（日本 100V）</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check9">
+                        <label for="check9">Google Maps 離線地圖下載</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check10">
+                        <label for="check10">Tabelog / Retty / Line 安裝</label>
+                    </div>
+                </div>
+                
+                <h3>📱 必用 Apps</h3>
+                <div class="shopping-grid">
+                    <div class="shop-card">
+                        <strong>🗺️ Google Maps</strong>
+                        <small>導航＋離線地圖<br>必備</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>⭐ Tabelog</strong>
+                        <small>日本餐廳評分<br>排隊情報</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🍱 Retty</strong>
+                        <small>日本本土美食評分<br>本地必用</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>💬 Line</strong>
+                        <small>優惠券 / 店舖聯繫<br>日本通訊必備</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🚆 Suica/Pasmo</strong>
+                        <small>交通卡 APP 版<br>儲值額度追蹤</small>
+                    </div>
+                    <div class="shop-card">
+                        <strong>🏨 Booking.com</strong>
+                        <small>酒店確認<br>緊急聯繫</small>
+                    </div>
+                </div>
+                
+                <h3>🚑 應急聯繫</h3>
+                <div class="info-box">
+                    <ul>
+                        <li><strong>Villa Fontaine Haneda：</strong>+81-3-6423-8000</li>
+                        <li><strong>Mitsui Garden Ginza：</strong>+81-3-3574-7111</li>
+                        <li><strong>緊急電話：</strong>119（救護車 / 火警）</li>
+                        <li><strong>羽田 T3 客服：</strong>+81-3-5757-8111</li>
+                        <li><strong>香港駐東京總領事館：</strong>旅遊求助</li>
+                    </ul>
+                </div>
+                
+                <h3>💡 最後提示</h3>
+                <div class="info-box success">
+                    <ul>
+                        <li>✅ <strong>早起效率高：</strong>08:00–09:00 出發，逛街效率最高</li>
+                        <li>✅ <strong>午餐提前到：</strong>12:00–13:30 人多，建議提前 10 分抵達</li>
+                        <li>✅ <strong>17:00–19:00 避開下班潮：</strong>地鐵擁擠，可提早或延後</li>
+                        <li>✅ <strong>大型店優先買：</strong>LOFT / Itoya 選擇多，便利店最後買手信</li>
+                        <li>✅ <strong>退稅：</strong>購物滿 ¥5,000 領退稅單（可在機場退）</li>
+                        <li>✅ <strong>拍照景點：</strong>Shibuya Sky（18:00–18:45）、湯畑（21:00 點燈）、表參道隨時美</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer>
+            <p>🇯🇵 東京 6 天完整行程冊 | 2026/1/29–2/5</p>
+            <p>✈️ 祝你旅程愉快！享受東京美食＋購物＋景點 ✨</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 列印為 PDF 的簡單提示
+        window.addEventListener('load', function() {
+            console.log('💡 提示：按 Ctrl+P（Windows）或 Cmd+P（Mac）可列印為 PDF');
+        });
+    </script>
+</body>
+</html>
